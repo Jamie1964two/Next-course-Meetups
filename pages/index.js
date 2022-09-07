@@ -18,10 +18,40 @@ const DUMMY_MEETUPS = [
     },
 ]
 
-function HomePage() {
+function HomePage(props) {
     return (
-        <MeetupList meetups={DUMMY_MEETUPS}/>
+        <MeetupList meetups={props.meetups}/>
     )
 }
+
+
+// getStaticprops is great for more infrequent content change
+//code only runs on the server
+
+export async function getStaticProps() {
+    // fetch data from an API
+    // get data from db
+    return {
+        //must return an object
+        props: {
+            meetups: DUMMY_MEETUPS
+        },
+        revalidate: 10   //re-pregenerate page every 10s after request 
+    }
+} 
+
+
+/*
+// getServerSideProps runs on every request great for data changing every second (not as fast as staticprops)
+export async function getServerSideProps(context) {
+    const req = context.req;
+    const res = context.res;
+    return {
+        props: {
+            meetups: DUMMY_MEETUPS
+        }
+    };
+}
+*/
 
 export default HomePage;
