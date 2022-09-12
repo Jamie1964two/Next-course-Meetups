@@ -1,4 +1,9 @@
+import Head from 'next/head';
+import { MongoClient } from 'mongodb';
 import MeetupList from '../components/meetups/MeetupList';
+import { Fragment } from 'react';
+//import getAllHandler from './api/getAllmeetups';
+//import fetch from 'node-fetch';
 
 
 const DUMMY_MEETUPS = [
@@ -20,7 +25,16 @@ const DUMMY_MEETUPS = [
 
 function HomePage(props) {
     return (
+        <Fragment>
+            <Head>
+                <title>React Meetups</title>
+                <meta
+                name='description'
+                content='Browse a huge list of React get-togethers'
+                />
+            </Head>
         <MeetupList meetups={props.meetups}/>
+        </Fragment>
     )
 }
 
@@ -31,10 +45,30 @@ function HomePage(props) {
 export async function getStaticProps() {
     // fetch data from an API
     // get data from db
+    const client = await MongoClient.connect(process.env.MONGO_DB_CONNECTION);
+        const db = client.db();
+        const meetupsCollection = db.collection('meetups');
+    meetupsCollection.find();
+    const meetups = await meetupsCollection.find().toArray();
+    client.close();
+
+    //const meetups = await getAllHandler();
+    // const meetups = await fetch("./api/getAllMeetups", {
+    //     method:'GET',
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     }
+    // });
+
     return {
         //must return an object
         props: {
-            meetups: DUMMY_MEETUPS
+            meetups: meetups.map(meetup => ({
+                title: meetup.title,
+                address: meetup.address,
+                image: meetup.image,
+                id: meetup._id.toString(),
+            }))
         },
         revalidate: 10   //re-pregenerate page every 10s after request 
     }
