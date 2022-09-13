@@ -45,7 +45,7 @@ function HomePage(props) {
 export async function getStaticProps() {
     // fetch data from an API
     // get data from db
-    const client = await MongoClient.connect(process.env.MONGO_DB_CONNECTION);
+    const client = await MongoClient.connect(MONGO_DB_CONNECTION);
         const db = client.db();
         const meetupsCollection = db.collection('meetups');
     meetupsCollection.find();
